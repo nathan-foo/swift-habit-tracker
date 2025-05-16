@@ -24,6 +24,16 @@ extension Date {
         return calendar.isDateInToday(self)
     }
     
+    func format(_ format: String) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        return formatter.string(from: self)
+    }
+    
+    static var startOffsetOfThisMonth: Int {
+        Calendar.current.component(.weekday, from: startDateOfThisMonth) - 1
+    }
+    
     static var startDateOfThisMonth: Date {
         let calendar = Calendar.current
         guard let date = calendar.date(from: calendar.dateComponents([.year, .month], from: .now)) else {
