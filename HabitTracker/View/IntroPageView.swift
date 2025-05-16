@@ -11,6 +11,9 @@ struct IntroPageView: View {
     @State private var selectedItem: IntroPageItem = staticIntroItems.first!
     @State private var introItems: [IntroPageItem] = staticIntroItems
     @State private var activeIndex: Int = 0
+    @State private var askUsername: Bool = false
+    @AppStorage("username") private var username: String = ""
+    @AppStorage("isIntroCompleted") private var isIntroCompleted: Bool = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -54,7 +57,7 @@ struct IntroPageView: View {
                 
                 Button {
                     if selectedItem.id == introItems.last?.id {
-                        // last button pressed
+                        askUsername.toggle()
                     }
                     updateItem(isForward: true)
                 } label: {
@@ -71,6 +74,23 @@ struct IntroPageView: View {
             .multilineTextAlignment(.center)
             .frame(width: 300)
             .frame(maxHeight: .infinity)
+        }
+        .ignoresSafeArea(.keyboard, edges: .all)
+        .overlay {
+            ZStack(alignment: .bottom) {
+                Rectangle()
+                    .fill(.black.opacity(askUsername ? 0.3 : 0))
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        askUsername = false
+                    }
+                
+                if askUsername {
+                    UserNameView()
+                        .transition(.move(edge: .bottom).combined(with: .offset(y: 100)))
+                }
+            }
+            .animation(.snappy, value: askUsername)
         }
     }
     
@@ -97,6 +117,36 @@ struct IntroPageView: View {
             .offset(x: item.offset)
             .rotationEffect(.init(degrees: item.rotation))
             .zIndex(isSelected ? 2 : item.zindex)
+    }
+    
+    @ViewBuilder
+    func UserNameView() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Let's start with your name")
+                .font(.caption)
+                .foregroundStyle(.gray)
+            
+            TextField("John Smith", text: $username)
+                .applyPaddedBackground(10, hPadding: 15, vPadding: 12)
+                .opacityShadow(.black, opacity: 0.1, radius: 5)
+            
+            Button {
+                isIntroCompleted = true
+                
+            } label: {
+                Text("Start tracking my habits")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .hSpacing(.center)
+                    .padding(.vertical, 12)
+                    .background(.green.gradient, in: .rect(cornerRadius: 10))
+            }
+            .disableWithOpacity(username.isEmpty)
+            .padding(.top, 10)
+        }
+        .applyPaddedBackground(12)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 10)
     }
     
     func updateItem(isForward: Bool) {
