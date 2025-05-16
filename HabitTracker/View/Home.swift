@@ -35,7 +35,12 @@ struct Home: View {
         .safeAreaInset(edge: .bottom) {
             CreateButton()
         }
-        .background(.primary.opacity(0.05))
+        .background {
+            Rectangle()
+                .fill(.primary.opacity(0.05))
+                .ignoresSafeArea()
+                .scaleEffect(1.5)
+        }
     }
     
     @ViewBuilder
@@ -51,7 +56,8 @@ struct Home: View {
     @ViewBuilder
     func CreateButton() -> some View {
         NavigationLink {
-            
+            HabitCreationView()
+                .navigationTransition(.zoom(sourceID: "CREATEBUTTON", in: animationID))
         } label: {
             HStack(spacing: 10) {
                 Text("Create Habit")
@@ -84,5 +90,7 @@ struct Home: View {
 }
 
 #Preview {
-    Home()
+    NavigationStack {
+        ContentView()
+    }
 }

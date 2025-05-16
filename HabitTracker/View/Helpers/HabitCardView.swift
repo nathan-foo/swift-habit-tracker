@@ -18,7 +18,7 @@ struct HabitCardView: View {
                     Text(habit.name)
                         .font(.callout)
                     
-                    Text("Created on " + habit.createdAt.format("dd, MM YYYY"))
+                    Text("Created on " + habit.createdAt.format("MM dd, YYYY"))
                         .font(.caption2)
                         .foregroundStyle(.gray)
                     
